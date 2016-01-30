@@ -1,12 +1,14 @@
-#include <QStringList>
-
 #include "Opponent.h"
 
-int Opponent::play(const Board& board)
+std::pair<int, int> Opponent::play(const Board& board)
 {
-    int choice;
+    int row;
+    int col;
+
     do {
-        choice = qrand() % board.size();
-    } while (board[choice] != " ");
-    return choice;
+        row = qrand() % board.rows();
+        col = qrand() % board.cols();
+    } while (board(row, col) != Blank);
+
+    return std::make_pair(row, col);
 }

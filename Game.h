@@ -4,6 +4,16 @@
 #include <QObject>
 #include <QStringList>
 
+#include "Board.h"
+#include "Opponent.h"
+
+enum class WinCondition
+{
+    Open = 0,
+    XWon = 1,
+    OWon = 2
+};
+
 class Game : public QObject
 {
     Q_OBJECT
@@ -14,12 +24,14 @@ public:
 
 signals:
     void boardChanged();
+    void gameWon(WinCondition win);
 
 public slots:
     bool playIn(int slot);
 
 private:
-    QStringList m_board;
+    Board m_board;
+    Opponent m_opponent;
 };
 
 #endif // GAME_H

@@ -1,13 +1,12 @@
 #ifndef OPPONENT_H
 #define OPPONENT_H
 
-typedef QStringList Board;
-class QStringList;
+#include "Board.h"
 
 class Opponent
 {
 public:
-    int play(Board const& board);
+    std::pair<int,int> play(Board const& board);
 };
 
 #endif // OPPONENT_H
