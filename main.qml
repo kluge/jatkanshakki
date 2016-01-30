@@ -26,7 +26,7 @@ ApplicationWindow {
         rows: 5
         anchors.centerIn: parent
         Repeater {
-            model: boardModel
+            model: game.board
             Rectangle {
                 width: 100
                 height: 100
