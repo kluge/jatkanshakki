@@ -12,10 +12,12 @@ ApplicationWindow {
             title: qsTr("Game")
             MenuItem {
                 text: qsTr("&New game")
+                shortcut: "Ctrl+N"
                 onTriggered: newDialog.open();
             }
             MenuItem {
                 text: qsTr("Exit")
+                shortcut: "Ctrl+Q"
                 onTriggered: Qt.quit();
             }
         }
@@ -73,7 +75,7 @@ ApplicationWindow {
             game.newGame(rows.value, columns.value)
             grid.rows = rows.value
             grid.columns = columns.value
-            winnerText.text = qsTr("Draw!")
+            winnerText.text = qsTr("Make a move!")
         }
 
         ColumnLayout {
