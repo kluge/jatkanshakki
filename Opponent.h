@@ -1,7 +1,7 @@
 #ifndef OPPONENT_H
 #define OPPONENT_H
 
-#include "Board.h"
+class Board;
 
 class Opponent
 {

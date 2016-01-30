@@ -5,12 +5,14 @@
 
 #include <QString>
 
+/// The different states a tic tac toe square can be in.
 enum Square {
     Blank = 0,
     X,
     O
 };
 
+/// Convert Square to the traditional ASCII representation.
 inline
 QString toString(Square square) {
     switch (square) {
@@ -23,6 +25,7 @@ QString toString(Square square) {
     }
 }
 
+/// A variable-sized square board for tic tac toe.
 class Board
 {
 public:
@@ -31,6 +34,7 @@ public:
     Square& operator()(int r, int c);
     Square const& operator()(int r, int c) const;
 
+    /// Amount of rows (and columns) in the square grid
     int rows() const;
 
     typedef std::vector<Square>::const_iterator const_iterator;
@@ -42,8 +46,10 @@ public:
     const_iterator end() const;
     iterator end();
 
+    /// Total amount of squares on the board.
     size_t size() const;
 
+    /// Whether all the squares on the board are already full.
     bool full() const;
 private:
     int m_rows;

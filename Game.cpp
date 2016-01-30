@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include <QDebug>
 
 #include "Game.h"
@@ -144,34 +146,33 @@ Game::Game(QObject* parent)
 
 bool Game::playIn(int slot)
 {
-    qDebug() << "playIn " << slot;
-    if (slot < 0 || size_t(slot) >= m_board.size()) {
-        return false;
-    }
+    assert(slot >= 0 || size_t(slot) < m_board.size());
+
     int row = slot / m_board.rows();
     int col = slot % m_board.rows();
+    qDebug() << "playIn(" << slot << "): row =" << row << ", col =" << col;
 
     if (m_board(row, col) != Blank) {
         // slot is already full
         return false;
     }
-    m_board(row, col) = X;
 
+    m_board(row, col) = X;
     Square winner = checkWinCondition(m_board);
 
     if (winner == Blank && !m_board.full())
     {
         // still possible for opponent to make a move
         std::pair<int,int> opponentMove = m_opponent.play(m_board);
-        qDebug() << "Opponent played " << opponentMove.first << ", " << opponentMove.second;
+        qDebug() << "Opponent played" << opponentMove.first << ", " << opponentMove.second;
+
         m_board(opponentMove.first, opponentMove.second) = O;
+        winner = checkWinCondition(m_board);
     }
 
     emit boardChanged();
 
-    winner = checkWinCondition(m_board);
     if (winner != Blank || m_board.full()) {
-        qDebug() << "Emitting gameOver";
         emit gameOver(winner);
     }
 

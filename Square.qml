@@ -17,13 +17,16 @@ Item {
             anchors.centerIn: parent
             fontSizeMode: Text.Fit
             font.pixelSize: 36
+            color: gameRunning ? "black" : (winner == text ? "green" : "grey")
         }
         MouseArea {
             anchors.fill: parent
             onClicked: {
-                var success = game.playIn(index)
-                if (!success) {
-                    errorAnimation.start();
+                if (gameRunning) {
+                    var success = game.playIn(index)
+                    if (!success) {
+                        errorAnimation.start();
+                    }
                 }
             }
         }

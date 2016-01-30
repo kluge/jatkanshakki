@@ -7,6 +7,9 @@ ApplicationWindow {
     visible: true
     title: qsTr("Jätkänshakki - 5-in-a-row Tic Tac Toe")
 
+    property bool gameRunning: true
+    property string winner: ""
+
     menuBar: MenuBar {
         Menu {
             title: qsTr("Game")
@@ -46,16 +49,21 @@ ApplicationWindow {
         }
     }
 
-    function setWinner(winner) {
-        console.log("setWinner called with " + winner)
-        switch (winner) {
+    function setWinner(arg) {
+        console.log("setWinner called with " + arg)
+        gameRunning = false;
+
+        switch (arg) {
         case 0:
+            winner = ""
             winnerText.text = qsTr("Draw!")
             break
         case 1:
+            winner = "X"
             winnerText.text = qsTr("Winner: X")
             break
         case 2:
+            winner = "O"
             winnerText.text = qsTr("Winner: O")
             break
         }
@@ -76,6 +84,7 @@ ApplicationWindow {
             grid.rows = rows.value
             grid.columns = rows.value
             winnerText.text = qsTr("Make a move!")
+            gameRunning = true;
         }
 
         RowLayout {

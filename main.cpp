@@ -6,12 +6,12 @@
 
 int main(int argc, char *argv[])
 {
-    QGuiApplication app(argc, argv);
+    QGuiApplication app{argc, argv};
 
     QQmlApplicationEngine engine;
     Game game;
     engine.rootContext()->setContextProperty("game", &game);
-    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+    engine.load(QUrl{"qrc:/main.qml"});
 
     return app.exec();
 }

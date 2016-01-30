@@ -1,3 +1,5 @@
+#include "Board.h"
+
 #include "Opponent.h"
 
 std::pair<int, int> Opponent::play(const Board& board)
