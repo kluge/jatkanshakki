@@ -71,36 +71,24 @@ ApplicationWindow {
         title: "New game"
         standardButtons: StandardButton.Ok | StandardButton.Cancel
         onAccepted: {
-            console.log("New game with " + rows.value + " rows and " + columns.value + " columns ")
-            game.newGame(rows.value, columns.value)
+            console.log("New game with " + rows.value + " rows")
+            game.newGame(rows.value)
             grid.rows = rows.value
-            grid.columns = columns.value
+            grid.columns = rows.value
             winnerText.text = qsTr("Make a move!")
         }
 
-        ColumnLayout {
-            RowLayout {
-                Label {
-                    text: "Amount of rows:"
-                }
-                SpinBox {
-                    id: rows
-                    minimumValue: 5
-                    value: 5
-                }
+        RowLayout {
+            Label {
+                text: "Amount of rows:"
             }
-            RowLayout {
-                Label {
-                    text: "Amount of columns:"
-                }
-                SpinBox {
-                    id: columns
-                    minimumValue: 5
-                    value: 5
-                }
+            SpinBox {
+                id: rows
+                minimumValue: 5
+                value: 5
             }
         }
-    }
 
+    }
 }
 

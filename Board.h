@@ -26,13 +26,12 @@ QString toString(Square square) {
 class Board
 {
 public:
-    Board(int rows = 5, int cols = 5);
+    Board(int rows = 5);
 
     Square& operator()(int r, int c);
     Square const& operator()(int r, int c) const;
 
     int rows() const;
-    int cols() const;
 
     typedef std::vector<Square>::const_iterator const_iterator;
     typedef std::vector<Square>::iterator iterator;
@@ -48,7 +47,6 @@ public:
     bool full() const;
 private:
     int m_rows;
-    int m_cols;
     std::vector<Square> m_squares;
 };
 

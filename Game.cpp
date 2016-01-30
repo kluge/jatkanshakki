@@ -12,7 +12,7 @@ Square checkWinCondition(Board const& board)
     for (int r = 0; r != board.rows(); ++r) {
         int count = 0;
         Square current = Blank;
-        for (int c = 0; c != board.cols(); ++c) {
+        for (int c = 0; c != board.rows(); ++c) {
             if (board(r, c) != current) {
                 count = 1;
                 current = board(r, c);
@@ -27,7 +27,7 @@ Square checkWinCondition(Board const& board)
     }
 
     // columns
-    for (int c = 0; c != board.cols(); ++c) {
+    for (int c = 0; c != board.rows(); ++c) {
         int count = 0;
         Square current = Blank;
         for (int r = 0; r != board.rows(); ++r) {
@@ -48,7 +48,7 @@ Square checkWinCondition(Board const& board)
     for (int rowOffset = 0; rowOffset != board.rows() - target + 1; ++rowOffset) {
         int count = 0;
         Square current = Blank;
-        for (int c = 0; c != board.rows() - rowOffset && c != board.cols(); ++c) {
+        for (int c = 0; c != board.rows() - rowOffset; ++c) {
             Square symbol = board(rowOffset + c, c);
             if (symbol != current) {
                 count = 1;
@@ -64,10 +64,10 @@ Square checkWinCondition(Board const& board)
     }
 
     // downward sloping diagonals above the main diagonal
-    for (int colOffset = 1; colOffset != board.cols() - target + 1; ++colOffset) {
+    for (int colOffset = 1; colOffset != board.rows() - target + 1; ++colOffset) {
         int count = 0;
         Square current = Blank;
-        for (int r = 0; r != board.cols() - colOffset && r != board.rows(); ++r) {
+        for (int r = 0; r != board.rows() - colOffset; ++r) {
             Square symbol = board(r, colOffset + r);
             if (symbol != current) {
                 count = 1;
@@ -82,11 +82,11 @@ Square checkWinCondition(Board const& board)
         }
     }
 
-    // upward sloping diagonals below (and including) the main upward diagonal
+    // upward sloping diagonals above (and including) the main upward diagonal
     for (int rowOffset = board.rows() - 1; rowOffset != target - 2; --rowOffset) {
         int count = 0;
         Square current = Blank;
-        for (int c = 0; c != rowOffset + 1 && c != board.cols(); ++c) {
+        for (int c = 0; c != rowOffset + 1; ++c) {
             Square symbol = board(rowOffset - c, c);
             if (symbol != current) {
                 count = 1;
@@ -101,12 +101,12 @@ Square checkWinCondition(Board const& board)
         }
     }
 
-    // upward sloping diagonals above the main diagonal
-    for (int colOffset = board.cols() - 1; colOffset != target - 2; --colOffset) {
+    // upward sloping diagonals below the main upward diagonal
+    for (int colOffset = 1; colOffset != board.rows() - target + 1; ++colOffset) {
         int count = 0;
         Square current = Blank;
-        for (int r = 0; r != colOffset + 1 && r != board.rows(); ++r) {
-            Square symbol = board(r, colOffset - r);
+        for (int r = board.rows() - 1; r != colOffset - 1; --r) {
+            Square symbol = board(r, board.rows() - 1 - r + colOffset);
             if (symbol != current) {
                 count = 1;
                 current = symbol;
@@ -178,9 +178,9 @@ bool Game::playIn(int slot)
     return true;
 }
 
-void Game::newGame(int rows, int columns)
+void Game::newGame(int rows)
 {
-    qDebug() << "newGame: " << rows << "," << columns;
-    m_board = Board(rows, columns);
+    qDebug() << "newGame: " << rows;
+    m_board = Board(rows);
     emit boardChanged();
 }

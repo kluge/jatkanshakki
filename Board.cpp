@@ -1,9 +1,8 @@
 #include "Board.h"
 
-Board::Board(int rows, int cols)
+Board::Board(int rows)
     : m_rows(rows),
-      m_cols(cols),
-      m_squares(rows * cols, Blank)
+      m_squares(rows * rows, Blank)
 {
 
 }
@@ -21,11 +20,6 @@ Square const& Board::operator()(int r, int c) const
 int Board::rows() const
 {
     return m_rows;
-}
-
-int Board::cols() const
-{
-    return m_cols;
 }
 
 Board::const_iterator Board::begin() const

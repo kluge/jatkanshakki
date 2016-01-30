@@ -20,7 +20,7 @@ signals:
     void gameOver(int winner);
 
 public slots:
-    void newGame(int rows, int columns);
+    void newGame(int rows);
     bool playIn(int slot);
 
 private:
