@@ -177,3 +177,10 @@ bool Game::playIn(int slot)
 
     return true;
 }
+
+void Game::newGame(int rows, int columns)
+{
+    qDebug() << "newGame: " << rows << "," << columns;
+    m_board = Board(rows, columns);
+    emit boardChanged();
+}
