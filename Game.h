@@ -7,13 +7,6 @@
 #include "Board.h"
 #include "Opponent.h"
 
-enum class WinCondition
-{
-    Open = 0,
-    XWon = 1,
-    OWon = 2
-};
-
 class Game : public QObject
 {
     Q_OBJECT
@@ -24,7 +17,7 @@ public:
 
 signals:
     void boardChanged();
-    void gameWon(WinCondition win);
+    void gameOver(int winner);
 
 public slots:
     bool playIn(int slot);
