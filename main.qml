@@ -5,7 +5,7 @@ ApplicationWindow {
     visible: true
     width: 640
     height: 550
-    title: qsTr("Hello World")
+    title: qsTr("Jätkänshakki - 5-in-a-row Tic Tac Toe")
 
     menuBar: MenuBar {
         Menu {
@@ -27,46 +27,8 @@ ApplicationWindow {
         anchors.centerIn: parent
         Repeater {
             model: game.board
-            Rectangle {
-                id: slot
-                width: 100
-                height: 100
-                border.width: 1
-                color: "white"
-                Text {
-                    anchors.centerIn: parent
-                    text: modelData
-                    fontSizeMode: Text.Fit
-                    font.pixelSize: 72
-                }
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        var success = game.playIn(index)
-                        if (!success) {
-                            errorAnimation.start();
-                        }
-                    }
-                }
-                SequentialAnimation {
-                    id: errorAnimation
-                    ColorAnimation {
-                        target: slot
-                        property: "color"
-                        from: "white"
-                        to: "red"
-                        easing.type: Easing.OutQuad
-                        duration: 125
-                    }
-                    ColorAnimation {
-                        target: slot
-                        property: "color"
-                        from: "red"
-                        to: "white"
-                        easing.type: Easing.InQuad
-                        duration: 125
-                    }
-                }
+            Square {
+                text: modelData
             }
         }
     }
