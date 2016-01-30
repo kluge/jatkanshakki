@@ -22,6 +22,10 @@ bool Game::playIn(int slot)
     if (slot < 0 || slot >= m_board.size()) {
         return false;
     }
+    if (m_board[slot] == "X" || m_board[slot] == "O") {
+        // slot is already full
+        return false;
+    }
     m_board[slot] = "X";
     emit boardChanged();
     return true;
