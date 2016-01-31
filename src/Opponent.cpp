@@ -1,5 +1,8 @@
 #include <cassert>
 
+#include <QDebug>
+#include <QElapsedTimer>
+
 #include "Board.h"
 #include "Opponent.h"
 
@@ -15,7 +18,21 @@ Point Opponent::play(const Board& board)
     if (m_difficulty == Trivial) {
         return randomMove(board);
     } else {
-        Candidate best = bestMove(board, int(m_difficulty), O);
+        int maxDepth = int(m_difficulty);
+        Candidate best;
+        QElapsedTimer timer;
+        timer.start();
+
+        for (int depth = 1; depth <= maxDepth; ++depth) {
+            std::pair<Candidate, bool> result = bestMove(board, depth, O, timer);
+            qDebug() << "Depth" << depth << "of" << maxDepth << "took" << timer.elapsed() << "ms, timed out: " << result.second;
+            if (result.second) {
+                qDebug() << "Search timed out at depth" << depth << "of" << maxDepth;
+                break;
+            }
+            best = result.first;
+        }
+
         return best.move;
     }
 }
@@ -58,9 +75,13 @@ Square switchPlayer(Square player)
 /// after considering a search tree of depth \a depth.
 ///
 /// Precondition for outside callers: \a depth >= 1
-Candidate Opponent::bestMove(const Board& board, int depth, Square player)
+std::pair<Candidate, bool> Opponent::bestMove(Board const& board, int depth, Square player, QElapsedTimer const& timer)
 {
     assert(depth > 0);
+
+    if (timer.elapsed() > timeOut) {
+        return std::make_pair(Candidate{}, true);
+    }
 
     if (player == O) {
         // try every move and use the best one
@@ -78,8 +99,12 @@ Candidate Opponent::bestMove(const Board& board, int depth, Square player)
                         // we're not going to look further or there's no further to look
                         futureScore = evaluateBoard(future);
                     } else {
-                        Candidate candidate = bestMove(future, depth - 1, switchPlayer(player));
-                        futureScore = candidate.score;
+                        std::pair<Candidate, bool> result = bestMove(future, depth - 1, switchPlayer(player), timer);
+                        if (result.second == true) {
+                            // time out
+                            return result;
+                        }
+                        futureScore = result.first.score;
                     }
 
                     if (futureScore > score) {
@@ -93,9 +118,13 @@ Candidate Opponent::bestMove(const Board& board, int depth, Square player)
                         }
                     }
                 }
+                // if we have won, there's no point looking for better moves
+                if (score > winScore) {
+                    return std::make_pair(Candidate{move, score}, false);
+                }
             }
         }
-        return Candidate{move, score};
+        return std::make_pair(Candidate{move, score}, false);
     } else if (player == X) {
         // player is expected to pick the worst move from O's perpective
         Point move;
@@ -112,8 +141,12 @@ Candidate Opponent::bestMove(const Board& board, int depth, Square player)
                         // we're not going to look further or there's no further to look
                         futureScore = evaluateBoard(future);
                     } else {
-                        Candidate candidate = bestMove(future, depth - 1, switchPlayer(player));
-                        futureScore = candidate.score;
+                        std::pair<Candidate, bool> result = bestMove(future, depth - 1, switchPlayer(player), timer);
+                        if (result.second == true) {
+                            // time out
+                            return result;
+                        }
+                        futureScore = result.first.score;
                     }
 
                     if (futureScore < score) {
@@ -126,10 +159,14 @@ Candidate Opponent::bestMove(const Board& board, int depth, Square player)
                             score = futureScore;
                         }
                     }
+                    // if player has won, there's no point looking for worse moves
+                    if (score < -winScore) {
+                        return std::make_pair(Candidate{move, score}, false);
+                    }
                 }
             }
         }
-        return Candidate{move, score};
+        return std::make_pair(Candidate{move, score}, false);
     } else {
         assert(false);
     }
@@ -177,7 +214,7 @@ Score evaluatePossibility(Possibility possibility) {
     if (possibility.current == Board::TARGET)
     {
         // obviously winning is important
-        return sign * std::pow(10, 20);
+        return sign * Opponent::winScore;
     }
     return sign * std::pow(10, possibility.current + (possibility.doubleEnded ? 0.5 : 0));
 }

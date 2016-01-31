@@ -1,4 +1,7 @@
 TEMPLATE = subdirs
+
+CONFIG = warn_on
+
 SUBDIRS = \
   src \
   app \
