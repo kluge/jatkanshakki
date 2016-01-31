@@ -1,23 +1,8 @@
-TEMPLATE = app
+TEMPLATE = subdirs
+SUBDIRS = \
+  src \
+  app \
+  test
 
-QT += qml quick
-
-CONFIG += c++11
-
-SOURCES += main.cpp \
-    Game.cpp \
-    Opponent.cpp \
-    Board.cpp
-
-RESOURCES += qml.qrc
-
-# Additional import path used to resolve QML modules in Qt Creator's code model
-QML_IMPORT_PATH =
-
-# Default rules for deployment.
-include(deployment.pri)
-
-HEADERS += \
-    Game.h \
-    Opponent.h \
-    Board.h
+app.depends = src
+test.depends = src
