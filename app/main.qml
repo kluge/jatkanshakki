@@ -76,18 +76,21 @@ ApplicationWindow {
 
     Dialog {
         id: newDialog
+        width: 255
+        height: 120
         title: "New game"
         standardButtons: StandardButton.Ok | StandardButton.Cancel
         onAccepted: {
-            console.log("New game with " + rows.value + " rows")
-            game.newGame(rows.value)
+            console.log("New game with " + rows.value + " rows and difficulty " + difficulty.currentIndex)
+            game.newGame(rows.value, difficulty.currentIndex)
             grid.rows = rows.value
             grid.columns = rows.value
             winnerText.text = qsTr("Make a move!")
             gameRunning = true;
         }
+        GridLayout {
+            columns: 2
 
-        RowLayout {
             Label {
                 text: "Amount of rows:"
             }
@@ -96,8 +99,17 @@ ApplicationWindow {
                 minimumValue: 5
                 value: 5
             }
-        }
 
+            Label {
+                text: "Opponent difficulty:"
+            }
+            ComboBox {
+                id: difficulty
+                currentIndex: 0
+                model: ["Trivial", "Easy"]
+            }
+        }
     }
 }
+
 

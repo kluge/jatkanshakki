@@ -38,7 +38,7 @@ QStringList Game::board() const
 Game::Game(QObject* parent)
     : QObject(parent),
       m_board(),
-      m_opponent()
+      m_opponent(Opponent::Trivial)
 {
 
 }
@@ -78,9 +78,10 @@ bool Game::playIn(int slot)
     return true;
 }
 
-void Game::newGame(int rows)
+void Game::newGame(int rows, int difficulty)
 {
     qDebug() << "newGame: " << rows;
     m_board = Board(rows);
+    m_opponent = Opponent(Opponent::Difficulty(difficulty));
     emit boardChanged();
 }
