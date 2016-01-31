@@ -14,7 +14,7 @@ enum Square {
 
 /// Convert Square to the traditional ASCII representation.
 inline
-QString toString(Square square) {
+QString toQString(Square square) {
     switch (square) {
     case X:
         return "X";
@@ -25,11 +25,12 @@ QString toString(Square square) {
     }
 }
 
-/// A variable-sized square board for tic tac toe.
+/// A variable-sized square board for 5-in-a-row tic tac toe.
 class Board
 {
 public:
     Board(int rows = 5);
+    static int const TARGET = 5; ///< amount of connected symbols needed to win
 
     Square& operator()(int r, int c);
     Square const& operator()(int r, int c) const;
@@ -55,5 +56,19 @@ private:
     int m_rows;
     std::vector<Square> m_squares;
 };
+
+
+struct RunLength
+{
+    Square square;
+    int length;
+};
+
+typedef std::vector<RunLength> RunLengths;
+
+std::vector<RunLengths> rowRunLengths(Board const& board);
+std::vector<RunLengths> colRunLengths(Board const& board);
+std::vector<RunLengths> downwardDiagonalRunLengths(Board const& board);
+std::vector<RunLengths> upwardDiagonalRunLengths(Board const& board);
 
 #endif // BOARD_H

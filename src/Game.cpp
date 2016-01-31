@@ -8,121 +8,20 @@
 /// \return symbol of the player that has won or Blank if game has not been won
 Square checkWinCondition(Board const& board)
 {
-    int const target = 5; // amount of connected symbols needed to win
-
-    // rows
-    for (int r = 0; r != board.rows(); ++r) {
-        int count = 0;
-        Square current = Blank;
-        for (int c = 0; c != board.rows(); ++c) {
-            if (board(r, c) != current) {
-                count = 1;
-                current = board(r, c);
-            } else {
-                ++count;
-                if (count == target && current != Blank) {
-                    qDebug() << "Won by " << current;
-                    return current;
-                }
+    for (auto runLengthsVectors : {rowRunLengths(board),
+                                   colRunLengths(board),
+                                   downwardDiagonalRunLengths(board),
+                                   upwardDiagonalRunLengths(board)}) {
+        for (RunLengths const& line : runLengthsVectors) {
+            auto iter = std::find_if(line.begin(), line.end(), [](RunLength rl) {
+                    return rl.length == Board::TARGET && rl.square != Blank;
+            });
+            if (iter != line.end()) {
+                // found the winner
+                return iter->square;
             }
         }
     }
-
-    // columns
-    for (int c = 0; c != board.rows(); ++c) {
-        int count = 0;
-        Square current = Blank;
-        for (int r = 0; r != board.rows(); ++r) {
-            if (board(r, c) != current) {
-                count = 1;
-                current = board(r, c);
-            } else {
-                ++count;
-                if (count == target && current != Blank) {
-                    qDebug() << "Won by " << current;
-                    return current;
-                }
-            }
-        }
-    }
-
-    // downward sloping diagonals below (and including) the main downward diagonal
-    for (int rowOffset = 0; rowOffset != board.rows() - target + 1; ++rowOffset) {
-        int count = 0;
-        Square current = Blank;
-        for (int c = 0; c != board.rows() - rowOffset; ++c) {
-            Square symbol = board(rowOffset + c, c);
-            if (symbol != current) {
-                count = 1;
-                current = symbol;
-            } else {
-                ++count;
-                if (count == target && current != Blank) {
-                    qDebug() << "Won by " << current;
-                    return current;
-                }
-            }
-        }
-    }
-
-    // downward sloping diagonals above the main diagonal
-    for (int colOffset = 1; colOffset != board.rows() - target + 1; ++colOffset) {
-        int count = 0;
-        Square current = Blank;
-        for (int r = 0; r != board.rows() - colOffset; ++r) {
-            Square symbol = board(r, colOffset + r);
-            if (symbol != current) {
-                count = 1;
-                current = symbol;
-            } else {
-                ++count;
-                if (count == target && current != Blank) {
-                    qDebug() << "Won by " << current;
-                    return current;
-                }
-            }
-        }
-    }
-
-    // upward sloping diagonals above (and including) the main upward diagonal
-    for (int rowOffset = board.rows() - 1; rowOffset != target - 2; --rowOffset) {
-        int count = 0;
-        Square current = Blank;
-        for (int c = 0; c != rowOffset + 1; ++c) {
-            Square symbol = board(rowOffset - c, c);
-            if (symbol != current) {
-                count = 1;
-                current = symbol;
-            } else {
-                ++count;
-                if (count == target && current != Blank) {
-                    qDebug() << "Won by " << current;
-                    return current;
-                }
-            }
-        }
-    }
-
-    // upward sloping diagonals below the main upward diagonal
-    for (int colOffset = 1; colOffset != board.rows() - target + 1; ++colOffset) {
-        int count = 0;
-        Square current = Blank;
-        for (int r = board.rows() - 1; r != colOffset - 1; --r) {
-            Square symbol = board(r, board.rows() - 1 - r + colOffset);
-            if (symbol != current) {
-                count = 1;
-                current = symbol;
-            } else {
-                ++count;
-                if (count == target && current != Blank) {
-                    qDebug() << "Won by " << current;
-                    return current;
-                }
-            }
-        }
-    }
-
-    qDebug() << "No winner yet";
     return Blank;
 }
 
@@ -130,7 +29,7 @@ QStringList Game::board() const
 {
     QStringList squares;
     for (auto square : m_board) {
-        squares << toString(square);
+        squares << toQString(square);
 
     }
     return squares;
