@@ -9,7 +9,7 @@ Opponent::Opponent(Opponent::Difficulty difficulty)
 }
 
 
-std::pair<int, int> Opponent::play(const Board& board)
+Point Opponent::play(const Board& board)
 {
     if (m_difficulty == Trivial) {
         return randomMove(board);
@@ -19,7 +19,7 @@ std::pair<int, int> Opponent::play(const Board& board)
 }
 
 /// Returns a random valid move for O
-std::pair<int, int> Opponent::randomMove(const Board& board)
+Point Opponent::randomMove(const Board& board)
 {
     int row;
     int col;
@@ -29,22 +29,22 @@ std::pair<int, int> Opponent::randomMove(const Board& board)
         col = qrand() % board.rows();
     } while (board(row, col) != Blank);
 
-    return std::make_pair(row, col);
+    return Point{row, col};
 }
 
 /// Return Manhattan distance from point (\a r, \a c) to the center of the board with \a rows rows.
-int distanceToCenter(int r, int c, int rows) {
+int distanceToCenter(Point point, int rows) {
     // for even number of rows we'll favor lower right corner, but that's OK
     int midR = rows / 2 + 1;
     int midC = rows / 2 + 1;
-    return std::abs(midR - r) + std::abs(midC + c);
+    return std::abs(midR - point.row) + std::abs(midC + point.column);
 }
 
 /// Returns the best available move for O according to evaluateBoard()
-std::pair<int, int> Opponent::bestMove(const Board& board)
+Point Opponent::bestMove(const Board& board)
 {
     // try every move and use the best one
-    std::pair<int,int> candidate;
+    Point candidate;
     Score score = -std::numeric_limits<Score>::max();
 
     for (int r = 0; r != board.rows(); ++r) {
@@ -54,12 +54,12 @@ std::pair<int, int> Opponent::bestMove(const Board& board)
                 future(r, c) = O;
                 int futureScore = evaluateBoard(future);
                 if (futureScore > score) {
-                    candidate = std::make_pair(r, c);
+                    candidate = Point{r, c};
                     score = futureScore;
                 } else if (futureScore == score) {
                     // prefer central squares when scores are equal
-                    if (distanceToCenter(candidate.first, candidate.second, board.rows()) > distanceToCenter(r, c, board.rows())) {
-                        candidate = std::make_pair(r, c);
+                    if (distanceToCenter(candidate, board.rows()) > distanceToCenter(Point{r, c}, board.rows())) {
+                        candidate = Point{r, c};
                         score = futureScore;
                     }
                 }
@@ -79,13 +79,13 @@ struct Possibility {
 
 /// Return the amount of blank squares on the line next to index and whether
 /// there are blank squares on both sides.
-std::pair<int, bool> evaluateBlankNeighbors(int index, RunLengths const& line)
+std::pair<int, bool> evaluateBlankNeighbors(size_t index, RunLengths const& line)
 {
     int blankNeighbors = 0;
     bool bothNeighborsBlank = true;
 
     // check before
-    if (index - 1 >= 0 && line[index - 1].square == Blank) {
+    if (int(index) - 1 >= 0 && line[index - 1].square == Blank) {
         blankNeighbors += line[index - 1].length;
     } else {
         bothNeighborsBlank = false;
@@ -127,7 +127,7 @@ Score Opponent::evaluateBoard(const Board& board)
                                    downwardDiagonalRunLengths(board),
                                    upwardDiagonalRunLengths(board)}) {
         for (RunLengths const& line : runLengthsVectors) {
-            for (int i = 0; i != line.size(); ++i) {
+            for (size_t i = 0; i != line.size(); ++i) {
                 if (line[i].square != Blank) {
                     // possibility for one player
                     Possibility possibility;

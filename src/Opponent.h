@@ -1,7 +1,8 @@
 #ifndef OPPONENT_H
 #define OPPONENT_H
 
-class Board;
+#include <Board.h>
+
 typedef double Score;
 
 class Opponent
@@ -11,10 +12,10 @@ public:
 
     Opponent(Difficulty difficulty);
 
-    std::pair<int,int> play(Board const& board);
+    Point play(Board const& board);
 private:
-    std::pair<int,int> randomMove(Board const& board);
-    std::pair<int,int> bestMove(const Board& board);
+    Point randomMove(Board const& board);
+    Point bestMove(Board const& board);
     Score evaluateBoard(Board const& board);
 
     Difficulty m_difficulty;

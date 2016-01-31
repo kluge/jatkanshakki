@@ -62,10 +62,10 @@ bool Game::playIn(int slot)
     if (winner == Blank && !m_board.full())
     {
         // still possible for opponent to make a move
-        std::pair<int,int> opponentMove = m_opponent.play(m_board);
-        qDebug() << "Opponent played" << opponentMove.first << ", " << opponentMove.second;
+        Point opponentMove = m_opponent.play(m_board);
+        qDebug() << "Opponent played" << opponentMove.row << ", " << opponentMove.column;
 
-        m_board(opponentMove.first, opponentMove.second) = O;
+        m_board(opponentMove.row, opponentMove.column) = O;
         winner = checkWinCondition(m_board);
     }
 

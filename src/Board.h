@@ -6,7 +6,8 @@
 #include <QString>
 
 /// The different states a tic tac toe square can be in.
-enum Square {
+enum Square
+{
     Blank = 0,
     X,
     O
@@ -24,6 +25,13 @@ QString toQString(Square square) {
         return " ";
     }
 }
+
+/// Coordinates to a specific square on the board.
+struct Point
+{
+    int row;
+    int column;
+};
 
 /// A variable-sized square board for 5-in-a-row tic tac toe.
 class Board
