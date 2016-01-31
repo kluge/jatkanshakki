@@ -1,5 +1,6 @@
-#include "Board.h"
+#include <cassert>
 
+#include "Board.h"
 #include "Opponent.h"
 
 Opponent::Opponent(Opponent::Difficulty difficulty)
@@ -14,7 +15,8 @@ Point Opponent::play(const Board& board)
     if (m_difficulty == Trivial) {
         return randomMove(board);
     } else {
-        return bestMove(board);
+        Candidate best = bestMove(board, int(m_difficulty), O);
+        return best.move;
     }
 }
 
@@ -40,33 +42,97 @@ int distanceToCenter(Point point, int rows) {
     return std::abs(midR - point.row) + std::abs(midC + point.column);
 }
 
-/// Returns the best available move for O according to evaluateBoard()
-Point Opponent::bestMove(const Board& board)
+Square switchPlayer(Square player)
 {
-    // try every move and use the best one
-    Point candidate;
-    Score score = -std::numeric_limits<Score>::max();
+    if (player == X) {
+        return O;
+    }
+    if (player == O) {
+        return X;
+    }
+    assert(false);
+    return Blank;
+}
 
-    for (int r = 0; r != board.rows(); ++r) {
-        for (int c = 0; c != board.rows(); ++c) {
-            if (board(r, c) == Blank) {
-                Board future{board};
-                future(r, c) = O;
-                int futureScore = evaluateBoard(future);
-                if (futureScore > score) {
-                    candidate = Point{r, c};
-                    score = futureScore;
-                } else if (futureScore == score) {
-                    // prefer central squares when scores are equal
-                    if (distanceToCenter(candidate, board.rows()) > distanceToCenter(Point{r, c}, board.rows())) {
-                        candidate = Point{r, c};
+/// Returns the best available move for \a player according to evaluateBoard()
+/// after considering a search tree of depth \a depth.
+///
+/// Precondition for outside callers: \a depth >= 1
+Candidate Opponent::bestMove(const Board& board, int depth, Square player)
+{
+    assert(depth > 0);
+
+    if (player == O) {
+        // try every move and use the best one
+        Point move;
+        Score score = -std::numeric_limits<Score>::max();
+
+        for (int r = 0; r != board.rows(); ++r) {
+            for (int c = 0; c != board.rows(); ++c) {
+                if (board(r, c) == Blank) {
+                    Board future{board};
+                    future(r, c) = player;
+
+                    Score futureScore;
+                    if (depth == 1 || future.full()) {
+                        // we're not going to look further or there's no further to look
+                        futureScore = evaluateBoard(future);
+                    } else {
+                        Candidate candidate = bestMove(future, depth - 1, switchPlayer(player));
+                        futureScore = candidate.score;
+                    }
+
+                    if (futureScore > score) {
+                        move = Point{r, c};
                         score = futureScore;
+                    } else if (futureScore == score) {
+                        // prefer central squares when scores are equal
+                        if (distanceToCenter(move, board.rows()) > distanceToCenter(Point{r, c}, board.rows())) {
+                            move = Point{r, c};
+                            score = futureScore;
+                        }
                     }
                 }
             }
         }
+        return Candidate{move, score};
+    } else if (player == X) {
+        // player is expected to pick the worst move from O's perpective
+        Point move;
+        Score score = std::numeric_limits<Score>::max();
+
+        for (int r = 0; r != board.rows(); ++r) {
+            for (int c = 0; c != board.rows(); ++c) {
+                if (board(r, c) == Blank) {
+                    Board future{board};
+                    future(r, c) = player;
+
+                    Score futureScore;
+                    if (depth == 1  || future.full()) {
+                        // we're not going to look further or there's no further to look
+                        futureScore = evaluateBoard(future);
+                    } else {
+                        Candidate candidate = bestMove(future, depth - 1, switchPlayer(player));
+                        futureScore = candidate.score;
+                    }
+
+                    if (futureScore < score) {
+                        move = Point{r, c};
+                        score = futureScore;
+                    } else if (futureScore == score) {
+                        // expect player to prefer central squares when scores are equal
+                        if (distanceToCenter(move, board.rows()) > distanceToCenter(Point{r, c}, board.rows())) {
+                            move = Point{r, c};
+                            score = futureScore;
+                        }
+                    }
+                }
+            }
+        }
+        return Candidate{move, score};
+    } else {
+        assert(false);
     }
-    return candidate;
 }
 
 /// Representation of a possibility on a line
@@ -111,7 +177,7 @@ Score evaluatePossibility(Possibility possibility) {
     if (possibility.current == Board::TARGET)
     {
         // obviously winning is important
-        return sign * std::pow(10, 10);
+        return sign * std::pow(10, 20);
     }
     return sign * std::pow(10, possibility.current + (possibility.doubleEnded ? 0.5 : 0));
 }

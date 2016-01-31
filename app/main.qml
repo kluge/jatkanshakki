@@ -106,7 +106,7 @@ ApplicationWindow {
             ComboBox {
                 id: difficulty
                 currentIndex: 0
-                model: ["Trivial", "Easy"]
+                model: ["Trivial", "Easy", "Medium", "Hard"]
             }
         }
     }

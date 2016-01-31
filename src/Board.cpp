@@ -58,8 +58,6 @@ bool Board::full() const
     return std::find(m_squares.begin(), m_squares.end(), Blank) == m_squares.end();
 }
 
-
-
 std::vector<RunLengths> rowRunLengths(const Board& board)
 {
     std::vector<RunLengths> allRows;
