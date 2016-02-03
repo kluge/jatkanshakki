@@ -56,7 +56,7 @@ int distanceToCenter(Point point, int rows) {
     // for even number of rows we'll favor lower right corner, but that's OK
     int midR = rows / 2 + 1;
     int midC = rows / 2 + 1;
-    return std::abs(midR - point.row) + std::abs(midC + point.column);
+    return std::abs(midR - point.row) + std::abs(midC - point.column);
 }
 
 Square switchPlayer(Square player)
